@@ -5,6 +5,8 @@ import com.company.crm.controllers.interfaces.BookingController;
 import com.company.crm.services.implement.BookingServiceServiceImpl;
 import com.company.crm.models.Booking;
 import com.company.crm.utils.DateParser;
+import com.company.crm.utils.InputUtils;
+import com.company.crm.utils.InputValidator;
 import com.company.crm.utils.TableViewer;
 
 import java.math.BigDecimal;
@@ -53,8 +55,12 @@ public class BookingControllerImpl implements BookingController {
         TableViewer.showTable(bookingServiceImpl.getAll());
     }
 
+
+
+
     @Override
     public void add() {
+
         System.out.print("ID клиента: ");
         int idClient = Integer.parseInt(scanner.nextLine());
         System.out.print("ID комнаты: ");
@@ -63,35 +69,76 @@ public class BookingControllerImpl implements BookingController {
         int idStaff = Integer.parseInt(scanner.nextLine());
         System.out.print("ID заявки группы: ");
         int idGroup = Integer.parseInt(scanner.nextLine());
-        System.out.print("Дата заезда DD.MM.YYYY: ");
-        LocalDate arrival = DateParser.parserDate(scanner.nextLine());
-        System.out.print("Дата выезда DD.MM.YYYY: ");
-        LocalDate departure = DateParser.parserDate(scanner.nextLine());
-        System.out.print("Количество гостей: ");
-        int guests = Integer.parseInt(scanner.nextLine());
-        System.out.print("Время брони (YYYY-MM-DDTHH:MM) или пусто: ");
-        String bt = scanner.nextLine();
-        LocalDateTime bookingTime = bt.isBlank() ? LocalDateTime.now() : LocalDateTime.parse(bt);
-        System.out.print("Статус (да/нет): ");
-        boolean status = readBoolean(scanner);
-        System.out.print("Цена (например 1000.00): ");
-        BigDecimal price = new BigDecimal(scanner.nextLine());
 
-        Booking b = new Booking(idClient, idRoom, idStaff, idGroup, arrival, departure, guests, bookingTime, status, price);
-        bookingServiceImpl.add(b);
-        System.out.println("Добавлено:");
-        TableViewer.showTable(List.of(b));
+
+        LocalDate arrival = DateParser.parserDate("Введите дату заезда (DD.MM.YYYY)");
+        LocalDate departure = DateParser.parserDate("Введите дату выезда (DD.MM.YYYY)");
+
+        if (!InputValidator.isValidDateRange(arrival, departure)) {
+            System.out.println("Дата выезда не может быть раньше даты заезда.");
+            return;
+        }
+
+        int guests;
+        while (true) {
+            System.out.print("Количество гостей: ");
+            guests = Integer.parseInt(scanner.nextLine());
+            if (InputValidator.isValidGuestCount(guests)) break;
+            System.out.println("Количество гостей должно быть от 1 до 100.");
+        }
+
+        LocalDateTime bookingTime;
+        System.out.print("Время брони (YYYY-MM-DDTHH:MM) или Enter: ");
+        String bt = scanner.nextLine();
+        try {
+            bookingTime = bt.isBlank()
+                    ? LocalDateTime.now()
+                    : LocalDateTime.parse(bt);
+        } catch (Exception e) {
+            System.out.println("Неверный формат времени брони.");
+            return;
+        }
+
+        System.out.print("Статус (да/нет): ");
+        boolean status = InputUtils.readBoolean(scanner);
+
+        BigDecimal price;
+        while (true) {
+            System.out.print("Введите цену: ");
+            try {
+                price = new BigDecimal(scanner.nextLine());
+                if (InputValidator.isValidPrice(price)) break;
+            } catch (Exception ignored) {
+            }
+            System.out.println("Некорректная цена.");
+        }
+
+        Booking booking = new Booking(
+                idClient, idRoom, idStaff, idGroup,
+                arrival, departure, guests,
+                bookingTime, status, price
+        );
+
+        bookingServiceImpl.add(booking);
+
+        System.out.println("Бронирование успешно добавлено:");
+        TableViewer.showTable(List.of(booking));
     }
+
+
 
     @Override
     public void update() {
+
         System.out.print("Введите ID брони: ");
         int id = Integer.parseInt(scanner.nextLine());
+
         Booking existing = bookingServiceImpl.findById(id);
         if (existing == null) {
-            System.out.println("Не найдено");
+            System.out.println("Бронирование не найдено.");
             return;
         }
+
         TableViewer.showTable(List.of(existing));
 
         int idClient = Integer.parseInt(
@@ -110,26 +157,54 @@ public class BookingControllerImpl implements BookingController {
                 promptWithDefault(scanner, "ID заявки группы: ", String.valueOf(existing.getIdGroupApplication()))
         );
 
-        LocalDate arrival = promptDateWithDefault(scanner, "Дата заезда: ", existing.getArrivalDate());
-        LocalDate departure = promptDateWithDefault(scanner, "Дата выезда: ", existing.getDepartureDate());
-
-        int guests = Integer.parseInt(
-                promptWithDefault(scanner, "Количество гостей: ", String.valueOf(existing.getNumberGuests()))
+        LocalDate arrival = InputUtils.promptDateWithDefault(
+                scanner, "дату заезда", existing.getArrivalDate()
         );
 
-        System.out.print("Время брони (YYYY-MM-DDTHH:MM) [" +
-                (existing.getBookingTime() == null ? "" : existing.getBookingTime()) + "]: ");
+        LocalDate departure = InputUtils.promptDateWithDefault(
+                scanner, "дату выезда", existing.getDepartureDate()
+        );
 
+        if (!InputValidator.isValidDateRange(arrival, departure)) {
+            System.out.println("Дата выезда не может быть раньше даты заезда.");
+            return;
+        }
+
+        int guests;
+        while (true) {
+            String g = InputUtils.promptWithDefault(
+                    scanner, "количество гостей",
+                    String.valueOf(existing.getNumberGuests())
+            );
+            try {
+                guests = Integer.parseInt(g);
+                if (InputValidator.isValidGuestCount(guests)) break;
+            } catch (Exception ignored) {}
+            System.out.println("Количество гостей должно быть от 1 до 100.");
+        }
+
+        System.out.print("Время брони [" + existing.getBookingTime() + "]: ");
         String bt = scanner.nextLine();
         LocalDateTime bookingTime = bt.isBlank()
                 ? existing.getBookingTime()
                 : LocalDateTime.parse(bt);
 
-        boolean status = askStatusWithDefault(scanner, existing.isStatus());
-
-        BigDecimal price = new BigDecimal(
-                promptWithDefault(scanner, "Цена: ", existing.getPrice().toString())
+        boolean status = InputUtils.askStatusWithDefault(
+                scanner, existing.isStatus()
         );
+
+        BigDecimal price;
+        while (true) {
+            String p = InputUtils.promptWithDefault(
+                    scanner, "цену", existing.getPrice().toString()
+            );
+            try {
+                price = new BigDecimal(p);
+                if (InputValidator.isValidPrice(price)) break;
+            } catch (Exception ignored) {}
+            System.out.println("Некорректная цена.");
+        }
+
         existing.setIdClient(idClient);
         existing.setIdLivingRoom(idRoom);
         existing.setIdStaff(idStaff);
@@ -142,11 +217,15 @@ public class BookingControllerImpl implements BookingController {
         existing.setPrice(price);
 
         Booking result = bookingServiceImpl.update(existing);
+
         if (result != null) {
-            System.out.println("Обновлено:");
+            System.out.println("Бронирование обновлено:");
             TableViewer.showTable(List.of(result));
-        } else System.out.println("Ошибка обновления");
+        } else {
+            System.out.println("Ошибка обновления.");
+        }
     }
+
 
     @Override
     public void delete() {
@@ -193,21 +272,4 @@ public class BookingControllerImpl implements BookingController {
         else System.out.println("Не найдено");
     }
 
-
-
-    private static boolean readBoolean(Scanner scanner) {
-        while (true) {
-            String s = scanner.nextLine().trim().toLowerCase();
-            if (s.equals("да") || s.equals("y") || s.equals("yes") || s.equals("true") || s.equals("1")) return true;
-            if (s.equals("нет") || s.equals("n") || s.equals("no") || s.equals("false") || s.equals("0")) return false;
-            System.out.print("Введите да/нет: ");
-        }
-    }
-
-    private static boolean askStatusWithDefault(Scanner scanner, boolean def) {
-        System.out.print("Статус (да/нет) [" + (def ? "да" : "нет") + "]: ");
-        String s = scanner.nextLine().trim();
-        if (s.isEmpty()) return def;
-        return s.equalsIgnoreCase("да") || s.equalsIgnoreCase("y") || s.equalsIgnoreCase("1") || s.equalsIgnoreCase("true");
-    }
 }

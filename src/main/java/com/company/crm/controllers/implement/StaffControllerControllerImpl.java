@@ -3,6 +3,8 @@ package com.company.crm.controllers.implement;
 import com.company.crm.controllers.interfaces.StaffController;
 import com.company.crm.models.Staff;
 import com.company.crm.services.implement.StaffServiceServiceImpl;
+import com.company.crm.utils.InputUtils;
+import com.company.crm.utils.InputValidator;
 import com.company.crm.utils.TableViewer;
 
 import java.util.List;
@@ -61,34 +63,73 @@ public class StaffControllerControllerImpl implements StaffController {
 
     @Override
     public void add() {
-        System.out.print("Введите новое имя: ");
-        String name = scanner.nextLine();
 
-        System.out.print("Введите новые паспортные данные: ");
-        String passport_data = scanner.nextLine();
+        String name;
+        do {
+            name = InputUtils.readRequired(scanner, "Введите имя");
+            if (!InputValidator.isValidName(name)) {
+                System.out.println("Имя введено некорректно.");
+                name = null;
+            }
+        } while (name == null);
 
-        System.out.print("Введите новый номер телефона:  ");
-        String phone_number = scanner.nextLine();
+        String passport;
+        do {
+            passport = InputUtils.readRequired(scanner, "Введите паспортные данные");
+            if (!InputValidator.isValidPassport(passport)) {
+                System.out.println("Паспорт должен содержать 10 цифр.");
+                passport = null;
+            }
+        } while (passport == null);
+        passport = InputValidator.normalizePassport(passport);
 
-        System.out.print("Введите номер трудовой книги: ");
-        String staff_book_number = scanner.nextLine();
+        String phone;
+        do {
+            phone = InputUtils.readRequired(scanner, "Введите номер телефона");
+            if (!InputValidator.isValidPhone(phone)) {
+                System.out.println("Некорректный номер телефона.");
+                phone = null;
+            }
+        } while (phone == null);
+        phone = InputValidator.normalizePhone(phone);
 
-        System.out.print("Введите опыт работы: ");
-        String work_experience = scanner.nextLine();
+        String staffBook;
+        do {
+            staffBook = InputUtils.readRequired(scanner, "Введите номер трудовой книги");
+            if (!InputValidator.isValidWorkBook(staffBook)) {
+                System.out.println("Номер трудовой книги должен содержать 7–8 цифр.");
+                staffBook = null;
+            }
+        } while (staffBook == null);
 
+        String workExperience =
+                InputUtils.readRequired(scanner, "Введите опыт работы");
 
-        Staff newStaff = new Staff(name, passport_data, phone_number, staff_book_number, work_experience);
+        Staff newStaff =
+                new Staff(name, passport, phone, staffBook, workExperience);
+
         staffServiceImpl.add(newStaff);
 
         System.out.println("Персонал успешно добавлен:");
         showTable(List.of(newStaff));
     }
 
+
     @Override
     public void update() {
-        System.out.print("Введите ID персонала: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+
+        int id;
+        while (true) {
+            System.out.print("Введите ID персонала: ");
+            if (scanner.hasNextInt()) {
+                id = scanner.nextInt();
+                scanner.nextLine();
+                if (id > 0) break;
+            } else {
+                scanner.nextLine();
+            }
+            System.out.println("ID должен быть положительным числом.");
+        }
 
         Staff staff = staffServiceImpl.findById(id);
         if (staff == null) {
@@ -99,28 +140,68 @@ public class StaffControllerControllerImpl implements StaffController {
         System.out.println("\nТекущие данные персонала:");
         TableViewer.showTable(List.of(staff));
 
+        String name;
+        do {
+            name = InputUtils.promptWithDefault(scanner, "имя", staff.getName());
+            if (!InputValidator.isValidName(name)) {
+                System.out.println("Некорректное имя.");
+                name = null;
+            }
+        } while (name == null);
 
-        String name = promptWithDefault(scanner, "имя: ", staff.getName());
+        String passport;
+        do {
+            passport = InputUtils.promptWithDefault(
+                    scanner, "паспортные данные", staff.getPassport_data()
+            );
+            if (!InputValidator.isValidPassport(passport)) {
+                System.out.println("Паспорт должен содержать 10 цифр.");
+                passport = null;
+            }
+        } while (passport == null);
+        passport = InputValidator.normalizePassport(passport);
 
-        String passport_data = promptWithDefault(scanner, "паспортные данные: ", staff.getPassport_data());
+        String phone;
+        do {
+            phone = InputUtils.promptWithDefault(
+                    scanner, "номер телефона", staff.getPhone_number()
+            );
+            if (!InputValidator.isValidPhone(phone)) {
+                System.out.println("Некорректный номер телефона.");
+                phone = null;
+            }
+        } while (phone == null);
+        phone = InputValidator.normalizePhone(phone);
 
-        String phone_number = promptWithDefault(scanner, "номер телефона: ", staff.getPhone_number());
+        String staffBook;
+        do {
+            staffBook = InputUtils.promptWithDefault(
+                    scanner, "номер трудовой книги", staff.getStaff_book_number()
+            );
+            if (!InputValidator.isValidWorkBook(staffBook)) {
+                System.out.println("Номер трудовой книги должен содержать 7–8 цифр.");
+                staffBook = null;
+            }
+        } while (staffBook == null);
 
-        String staff_book_number = promptWithDefault(scanner, "номер трудовой книги: ", staff.getPassport_data());
+        String workExperience =
+                InputUtils.promptWithDefault(
+                        scanner, "опыт работы", staff.getWork_experience()
+                );
 
-        String work_experience = promptWithDefault(scanner, "опыт работы: ", staff.getWork_experience());
-
-        Staff updated= new Staff(id, name, passport_data, phone_number, staff_book_number, work_experience);
+        Staff updated =
+                new Staff(id, name, passport, phone, staffBook, workExperience);
 
         Staff result = staffServiceImpl.update(updated);
-        if (result!= null) {
+
+        if (result != null) {
             System.out.println("Персонал успешно обновлен:");
             showTable(List.of(result));
-        }else{
-            System.out.println("Ошибка при обовлении персонала");
+        } else {
+            System.out.println("Ошибка при обновлении персонала.");
         }
-
     }
+
 
     @Override
     public void delete() {
@@ -184,16 +265,29 @@ public class StaffControllerControllerImpl implements StaffController {
 
     @Override
     public void find() {
-        System.out.print("Введите ID персонала для поиска: ");
-        int id = scanner.nextInt();
-        Staff c = staffServiceImpl.findById(id);
-        if (c != null) {
-            System.out.println("Найден персонал: " + c);
-            showTable(List.of(c));
+
+        int id;
+        while (true) {
+            System.out.print("Введите ID персонала: ");
+            if (scanner.hasNextInt()) {
+                id = scanner.nextInt();
+                scanner.nextLine();
+                if (id > 0) break;
+            } else {
+                scanner.nextLine();
+            }
+            System.out.println("ID должен быть положительным числом.");
+        }
+
+        Staff staff = staffServiceImpl.findById(id);
+
+        if (staff != null) {
+            showTable(List.of(staff));
         } else {
-            System.out.println("Персонал с ID " + id + " не найден");
+            System.out.println("Персонал с ID " + id + " не найден.");
         }
     }
+
 
 
 

@@ -6,6 +6,7 @@ import com.company.crm.services.implement.GroupApplicationServiceServiceImpl;
 import com.company.crm.models.GroupApplication;
 import com.company.crm.utils.DateParser;
 import com.company.crm.utils.InputUtils;
+import com.company.crm.utils.InputValidator;
 import com.company.crm.utils.TableViewer;
 
 import java.math.BigDecimal;
@@ -49,53 +50,127 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
 
     @Override
     public void add() {
-        System.out.print("ID комнаты: ");
-        int idRoom = Integer.parseInt(scanner.nextLine());
-        System.out.print("Дата заезда (DD.MM.YYYY): ");
-        LocalDate arrival = DateParser.parserDate(scanner.nextLine());
-        System.out.print("Дата выезда (DD.MM.YYYY): ");
-        LocalDate departure = DateParser.parserDate(scanner.nextLine());
-        System.out.print("Цена: ");
-        BigDecimal price = new BigDecimal(scanner.nextLine());
+
+        int idRoom;
+        while (true) {
+            System.out.print("Введите ID комнаты: ");
+            if (scanner.hasNextInt()) {
+                idRoom = scanner.nextInt();
+                scanner.nextLine();
+                if (idRoom > 0) break;
+            } else {
+                scanner.nextLine();
+            }
+            System.out.println("ID комнаты должен быть положительным числом.");
+        }
+
+        LocalDate arrival = DateParser.parserDate("Введите дату заезда (DD.MM.YYYY)");
+        LocalDate departure = DateParser.parserDate("Введите дату выезда (DD.MM.YYYY)");
+
+        if (!InputValidator.isValidDateRange(arrival, departure)) {
+            System.out.println("Дата выезда не может быть раньше даты заезда.");
+            return;
+        }
+
+        BigDecimal price;
+        while (true) {
+            System.out.print("Введите цену: ");
+            try {
+                price = new BigDecimal(scanner.nextLine());
+                if (InputValidator.isValidPrice(price)) break;
+            } catch (Exception ignored) {}
+            System.out.println("Некорректная цена.");
+        }
+
         System.out.print("Статус (да/нет): ");
         boolean status = InputUtils.readBoolean(scanner);
-        System.out.print("Комментарий: ");
-        String comment = scanner.nextLine();
 
-        GroupApplication g = new GroupApplication(idRoom, arrival, departure, price, status, comment);
+        String comment;
+        while (true) {
+            System.out.print("Комментарий (необязательно): ");
+            comment = scanner.nextLine();
+            if (InputValidator.isValidComment(comment)) break;
+            System.out.println("Комментарий не должен превышать 200 символов.");
+        }
+
+        GroupApplication g =
+                new GroupApplication(idRoom, arrival, departure, price, status, comment);
+
         service.add(g);
-        System.out.println("Добавлено:");
+
+        System.out.println("Заявка успешно добавлена:");
         TableViewer.showTable(List.of(g));
     }
 
+
     @Override
     public void update() {
-        System.out.print("ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Введите ID заявки: ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("ID должен быть числом.");
+            scanner.nextLine();
+            return;
+        }
+
+        int id = scanner.nextInt();
+        scanner.nextLine();
 
         GroupApplication existing = service.findById(id);
         if (existing == null) {
-            System.out.println("Не найдено");
+            System.out.println("Заявка не найдена.");
             return;
         }
 
         TableViewer.showTable(List.of(existing));
 
-        int idRoom = Integer.parseInt(
-                promptWithDefault(scanner, "ID комнаты: ", String.valueOf(existing.getIdLivingRoom()))
+        int idRoom;
+        while (true) {
+            String input = InputUtils.promptWithDefault(
+                    scanner, "ID комнаты", String.valueOf(existing.getIdLivingRoom())
+            );
+            try {
+                idRoom = Integer.parseInt(input);
+                if (idRoom > 0) break;
+            } catch (Exception ignored) {}
+            System.out.println("Некорректный ID комнаты.");
+        }
+
+        LocalDate arrival = InputUtils.promptDateWithDefault(
+                scanner, "дату заезда", existing.getArrivalDate()
         );
 
-        LocalDate arrival = promptDateWithDefault(scanner, "Дата заезда: ", existing.getArrivalDate());
-        LocalDate departure = promptDateWithDefault(scanner, "Дата выезда: ", existing.getDepartureDate());
-
-        BigDecimal price = new BigDecimal(
-                promptWithDefault(scanner, "Цена: ", existing.getPrice().toString())
+        LocalDate departure = InputUtils.promptDateWithDefault(
+                scanner, "дату выезда", existing.getDepartureDate()
         );
+
+        if (!InputValidator.isValidDateRange(arrival, departure)) {
+            System.out.println("Дата выезда не может быть раньше даты заезда.");
+            return;
+        }
+
+        BigDecimal price;
+        while (true) {
+            String input = InputUtils.promptWithDefault(
+                    scanner, "цену", existing.getPrice().toString()
+            );
+            try {
+                price = new BigDecimal(input);
+                if (InputValidator.isValidPrice(price)) break;
+            } catch (Exception ignored) {}
+            System.out.println("Некорректная цена.");
+        }
 
         boolean status = InputUtils.askStatusWithDefault(scanner, existing.isStatus());
 
-        String comment = promptWithDefault(scanner, "Комментарий: ", existing.getComment());
-
+        String comment;
+        while (true) {
+            comment = InputUtils.promptWithDefault(
+                    scanner, "комментарий", existing.getComment()
+            );
+            if (InputValidator.isValidComment(comment)) break;
+            System.out.println("Комментарий не должен превышать 200 символов.");
+        }
 
         existing.setIdLivingRoom(idRoom);
         existing.setArrivalDate(arrival);
@@ -104,16 +179,16 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
         existing.setStatus(status);
         existing.setComment(comment);
 
-
         GroupApplication result = service.update(existing);
 
         if (result != null) {
-            System.out.println("Обновлено:");
+            System.out.println("Заявка успешно обновлена:");
             TableViewer.showTable(List.of(result));
         } else {
-            System.out.println("Ошибка");
+            System.out.println("Ошибка при обновлении.");
         }
     }
+
 
 
     @Override
@@ -148,12 +223,27 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
 
     @Override
     public void find() {
-        System.out.print("ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Введите ID заявки: ");
+
+        if (!scanner.hasNextInt()) {
+            System.out.println("ID должен быть числом.");
+            scanner.nextLine();
+            return;
+        }
+
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
         GroupApplication g = service.findById(id);
-        if (g != null) TableViewer.showTable(List.of(g));
-        else System.out.println("Не найдено");
+
+        if (g != null) {
+            TableViewer.showTable(List.of(g));
+        } else {
+            System.out.println("Заявка не найдена.");
+        }
     }
+
 
 
 }

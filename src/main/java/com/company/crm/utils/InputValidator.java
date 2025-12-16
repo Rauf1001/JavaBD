@@ -28,8 +28,12 @@ public class InputValidator {
     public static boolean isValidEmail(String email){
         return EMAIL_PATTERN.matcher(email).matches();
     }
-    public static boolean isValidPhone(String phone){
-        return PHONE_PATTERN.matcher(phone).matches();
+    public static boolean isValidPhone(String phone) {
+        String digits = extractDigitsPhone(phone);
+        if (digits == null) return false;
+
+        return digits.length() == 11 &&
+                (digits.startsWith("7") || digits.startsWith("8"));
     }
     public static boolean isValidWorkBook(String workbook){
         return WORKBOOK_PATTERN.matcher(workbook).matches();
@@ -41,7 +45,10 @@ public class InputValidator {
         return price != null && price.compareTo(BigDecimal.ZERO) > 0;
     }
     public static boolean isValidPassport(String passport){
-        return passport != null && PASSPORT_PATTERN.matcher(passport).matches();
+        String digits = extractDigitsPassport(passport);
+        if (digits == null) return false;
+
+        return digits.length() == 10;
     }
     public static boolean isValidName(String name){
         return name != null && NAME_PATTERN.matcher(name).matches();
@@ -55,11 +62,43 @@ public class InputValidator {
 
 
 
-//    public static boolean isValidAge(int age){
-//        return age > 0 && age < 120;
-//    }
+    public static String extractDigitsPhone(String phone) {
+        return phone == null ? null : phone.replaceAll("\\D", "");
+    }
+    public static String extractDigitsPassport(String passport) {
+        return passport == null ? null : passport.replaceAll("\\D", "");
+    }
     public static boolean isValidDateRange(LocalDate start, LocalDate end){
         return !start.isAfter(end);
     }
 
+    public static String normalizePhone(String phone) {
+        String digits = extractDigitsPhone(phone);
+
+        if (!isValidPhone(phone)) {
+            throw new IllegalArgumentException("Некорректный номер телефона");
+        }
+
+        // заменяем 8 → 7
+        digits = "7" + digits.substring(1);
+
+        return String.format(
+                "+7(%s)%s-%s-%s",
+                digits.substring(1, 4),
+                digits.substring(4, 7),
+                digits.substring(7, 9),
+                digits.substring(9, 11)
+        );
+    }
+    public static String normalizePassport(String passport) {
+        String digits = extractDigitsPassport(passport);
+
+        if (!isValidPassport(passport)) {
+            throw new IllegalArgumentException("Некорректные паспортные данные. Должно быть 10 цифр.");
+        }
+
+        return String.format("%s %s",
+                digits.substring(0, 4),
+                digits.substring(4, 10));
+    }
 }

@@ -4,6 +4,8 @@ import com.company.crm.controllers.interfaces.ClientController;
 import com.company.crm.models.Client;
 import com.company.crm.services.implement.ClientServiceServiceImpl;
 import com.company.crm.utils.DateParser;
+import com.company.crm.utils.InputUtils;
+import com.company.crm.utils.InputValidator;
 import com.company.crm.utils.TableViewer;
 
 import java.time.LocalDate;
@@ -63,26 +65,58 @@ public class ClientControllerControllerImpl implements ClientController {
 
     @Override
     public void add() {
-        System.out.print("Введите новое имя: ");
-        String name = scanner.nextLine();
-        System.out.print("Введите новый email: ");
-        String email = scanner.nextLine();
-        System.out.print("Введите новый номер телефона: ");
-        String phone_number = scanner.nextLine();
-        System.out.print("Введите новые паспортные данные: ");
-        String passport_data = scanner.nextLine();
-        System.out.print("Введите новую дату рождения в формате 'DD.MM.YYYY': ");
-        LocalDate birth_date = readBirthDate();
 
-        Client newClient = new Client(name, email, phone_number, passport_data, birth_date);
+        String name;
+        do {
+            name = InputUtils.readRequired(scanner, "Введите имя");
+            if (!InputValidator.isValidName(name)) {
+                System.out.println("Имя введено некорректно.");
+                name = null;
+            }
+        } while (name == null);
+
+        String email;
+        do {
+            email = InputUtils.readRequired(scanner, "Введите email");
+            if (!InputValidator.isValidEmail(email)) {
+                System.out.println("Некорректный email.");
+                email = null;
+            }
+        } while (email == null);
+
+        String phone;
+        do {
+            phone = InputUtils.readRequired(scanner, "Введите номер телефона");
+            if (!InputValidator.isValidPhone(phone)) {
+                System.out.println("Некорректный номер телефона.");
+                phone = null;
+            }
+        } while (phone == null);
+        phone = InputValidator.normalizePhone(phone);
+
+
+        String passport;
+        do {
+            passport = InputUtils.readRequired(scanner, "Введите паспортные данные");
+            if (!InputValidator.isValidPassport(passport)) {
+                System.out.println("Некорректные паспортные данные.");
+                passport = null;
+            }
+        } while (passport == null);
+        passport = InputValidator.normalizePassport(passport);
+
+        LocalDate birthDate = readBirthDate();
+
+        Client newClient = new Client(name, email, phone, passport, birthDate);
         clientServiceImpl.add(newClient);
 
         System.out.println("Клиент успешно добавлен:");
-        showTable(List.of(newClient));
+        TableViewer.showTable(List.of(newClient));
     }
 
     @Override
     public void update() {
+
         System.out.print("Введите ID клиента: ");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -93,32 +127,63 @@ public class ClientControllerControllerImpl implements ClientController {
             return;
         }
 
-        System.out.println("\nТекущие данные клиента:");
         TableViewer.showTable(List.of(client));
 
+        String name;
+        do {
+            name = InputUtils.promptWithDefault(scanner, "имя", client.getName());
+            if (!InputValidator.isValidName(name)) {
+                System.out.println("Некорректное имя.");
+                name = null;
+            }
+        } while (name == null);
 
-        String name = promptWithDefault(scanner, "имя: ", client.getName());
+        String email;
+        do {
+            email = InputUtils.promptWithDefault(scanner, "email", client.getEmail());
+            if (!InputValidator.isValidEmail(email)) {
+                System.out.println("Некорректный email.");
+                email = null;
+            }
+        } while (email == null);
 
-        String email = promptWithDefault(scanner, "email: ", client.getEmail());
+        String phone;
+        do {
+            phone = InputUtils.promptWithDefault(scanner, "номер телефона", client.getPhone_number());
+            if (!InputValidator.isValidPhone(phone)) {
+                System.out.println("Некорректный номер телефона.");
+                phone = null;
+            }
+        } while (phone == null);
 
-        String phone_number = promptWithDefault(scanner, "номер телефона: ", client.getPhone_number());
+        phone = InputValidator.normalizePhone(phone);
 
-        String passport_data = promptWithDefault(scanner, "паспортные данные: ", client.getPassport_data());
+        String passport;
+        do {
+            passport = InputUtils.promptWithDefault(scanner, "паспортные данные", client.getPassport_data());
+            if (!InputValidator.isValidPassport(passport)) {
+                System.out.println("Некорректные паспортные данные.");
+                passport = null;
+            }
+        } while (passport == null);
 
-        LocalDate birth_date = promptDateWithDefault(scanner, "дату рождения: ", client.getBirth_date());
+        passport = InputValidator.normalizePassport(passport);
 
-        Client updated = new Client(id, name, email, phone_number, passport_data, birth_date);
+
+        LocalDate birthDate =
+                InputUtils.promptDateWithDefault(scanner, "дату рождения", client.getBirth_date());
+
+        Client updated = new Client(id, name, email, phone, passport, birthDate);
         Client result = clientServiceImpl.update(updated);
-        if (result!=null){
+
+        if (result != null) {
             System.out.println("Клиент успешно обновлен:");
-            showTable(List.of(result));
-        }else{
-            System.out.println("Ошибка при обновлении Клиента");
+            TableViewer.showTable(List.of(result));
+        } else {
+            System.out.println("Ошибка при обновлении клиента.");
         }
-
-
-
     }
+
 
     @Override
     public void delete() {
@@ -195,21 +260,30 @@ public class ClientControllerControllerImpl implements ClientController {
 
     @Override
     public void find() {
-        System.out.print("Введите ID клиента для поиска: ");
+        System.out.print("Введите ID клиента: ");
+
+        if (!scanner.hasNextInt()) {
+            System.out.println("ID должен быть числом.");
+            scanner.nextLine();
+            return;
+        }
+
         int id = scanner.nextInt();
+        scanner.nextLine();
+
         Client c = clientServiceImpl.findById(id);
         if (c != null) {
-            System.out.println("Найден клиент: " + c);
-            showTable(List.of(c));
+            TableViewer.showTable(List.of(c));
         } else {
-            System.out.println("Клиент с ID " + id + " не найден");
+            System.out.println("Клиент не найден.");
         }
     }
+
 
     private LocalDate readBirthDate() {
         LocalDate birthDate = null;
         while (birthDate == null) {
-
+            System.out.print("Введите дату рождения (DD.MM.YYYY): ");
             String input = scanner.nextLine();
             birthDate = DateParser.parserDate(input);
             if (birthDate == null) {
