@@ -6,8 +6,18 @@ import java.util.Scanner;
 
 public class InputUtils {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
+
+    public static String readRequired(Scanner sc, String text){
+        while(true){
+            System.out.print(text + ": ");
+            String input = sc.nextLine().trim();
+            if (!input.isEmpty()) return input;
+            System.out.println("Поле не может быть пустым");
+        }
+    }
     public static String promptWithDefault(Scanner scanner, String fieldName, String oldValue) {
         System.out.print("Введите новое " + fieldName);
         String input = scanner.nextLine();
@@ -58,50 +68,6 @@ public class InputUtils {
 
         return readBoolean(new Scanner(input));
     }
-
-    public static boolean readStatus(Scanner scanner) {
-        while (true) {
-            System.out.print("Введите статус (да/нет): ");
-            String input = scanner.nextLine().trim().toLowerCase();
-
-            switch (input) {
-                case "да":
-                case "true":
-                case "1":
-                    return true;
-                case "нет":
-                case "false":
-                case "0":
-                    return false;
-                default:
-                    System.out.println("Некорректный ввод. Введите: да/нет");
-            }
-        }
-    }
-    public static boolean parseBooleanInput(String input) {
-        if (input == null) return false;
-        String s = input.trim().toLowerCase();
-        if (s.isEmpty()) return false; // если пусто — можно вернуть дефолт вне этой ф-ии
-
-        switch (s) {
-            case "да":
-            case "y":
-            case "yes":
-            case "true":
-            case "1":
-                return true;
-            case "нет":
-            case "n":
-            case "no":
-            case "false":
-            case "0":
-                return false;
-            default:
-                // по умолчанию — false, либо можно бросать исключение / запрашивать снова
-                return false;
-        }
-    }
-
 
 
 }

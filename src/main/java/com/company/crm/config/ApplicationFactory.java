@@ -14,8 +14,8 @@ import java.util.List;
 
 public class ApplicationFactory {
 
-    private static final DaoMode MODE = DaoMode.MEMORY;
-//     private static final DaoMode MODE = DaoMode.JDBC;
+//    private static final DaoMode MODE = DaoMode.MEMORY;
+     private static final DaoMode MODE = DaoMode.JDBC;
 
     public static MainMenuControllerImpl createApplication() {
         List<GenericController> controllers = new ArrayList<>();
