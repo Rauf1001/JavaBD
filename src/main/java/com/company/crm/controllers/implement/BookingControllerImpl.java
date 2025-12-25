@@ -2,7 +2,7 @@ package com.company.crm.controllers.implement;
 
 import com.company.crm.controllers.interfaces.BookingController;
 
-import com.company.crm.services.implement.BookingServiceServiceImpl;
+import com.company.crm.services.implement.BookingServiceImpl;
 import com.company.crm.models.Booking;
 import com.company.crm.utils.DateParser;
 import com.company.crm.utils.InputUtils;
@@ -19,10 +19,10 @@ import static com.company.crm.utils.InputUtils.promptDateWithDefault;
 import static com.company.crm.utils.InputUtils.promptWithDefault;
 
 public class BookingControllerImpl implements BookingController {
-    private final BookingServiceServiceImpl bookingServiceImpl;
+    private final BookingServiceImpl bookingServiceImpl;
     private final Scanner scanner = new Scanner(System.in);
 
-    public BookingControllerImpl(BookingServiceServiceImpl bookingServiceImpl) {
+    public BookingControllerImpl(BookingServiceImpl bookingServiceImpl) {
         this.bookingServiceImpl = bookingServiceImpl;
     }
 
@@ -33,20 +33,34 @@ public class BookingControllerImpl implements BookingController {
     }
     @Override
     public void startMenu() {
-        boolean run = true;
-        while (run) {
+        boolean running = true;
+        while (running) {
             System.out.println("1 - Просмотр таблицы, 2 - Добавление объекта, 3 - Обновление, " + "4 - удаление, 5 - поиск по ID, 0 - выход");
 
-            int opt = scanner.nextInt();
+            int num = scanner.nextInt();
             scanner.nextLine();
-            switch (opt) {
-                case 1 -> showAll();
-                case 2 -> add();
-                case 3 -> update();
-                case 4 -> delete();
-                case 5 -> find();
-                case 0 -> run = false;
-                default -> System.out.println("Неверный ввод");
+            switch (num) {
+                case 1:
+                    showAll();
+                    break;
+                case 2:
+                    add();
+                    break;
+                case 3:
+                    update();
+                    break;
+                case 4:
+                    delete();
+                    break;
+                case 5:
+                    find();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Неверный ввод.");
+                    break;
             }
         }
     }

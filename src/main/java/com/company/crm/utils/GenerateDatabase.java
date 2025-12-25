@@ -74,9 +74,8 @@ public class GenerateDatabase {
                 "4917053628", "8364290715", "2758196043", "6193470852", "8032564917"
         );
 
-        List<String> workExperiences = Arrays.asList(
-                "10", "1", "2", "3", "4",
-                "5", "6", "7", "8", "9"
+        List<Integer> workExperiences = Arrays.asList(
+                10,1,2,3,4,5,6,7,8,9
         );
 
         List<Staff> list = new ArrayList<>();

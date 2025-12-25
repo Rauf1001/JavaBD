@@ -1,21 +1,37 @@
 package com.company.crm.utils;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:postgresql://localhost:5432/BD-atta";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "6525";
+    private static  String URL;
+    private static  String USER;
+    private static  String PASSWORD;
 
     static {
         try {
+            Properties properties = new Properties();
+            InputStream input = DatabaseConnection.class
+                    .getClassLoader()
+                    .getResourceAsStream("db.properties");
+
+            if (input == null) {
+                throw new RuntimeException("Файл bd.properties не найден");
+            }
+            properties.load(input);
+
+            URL = properties.getProperty("db.url");
+            USER = properties.getProperty("db.user");
+            PASSWORD = properties.getProperty("db.password");
+
             Class.forName("org.postgresql.Driver");
-            System.out.println("JDBC драйвер PostgreSQL загружен");
-        } catch (ClassNotFoundException e) {
+
+
+        } catch (Exception e) {
             System.err.println("Не удалось загрузить драйвер PostgreSQL");
-            e.printStackTrace();
         }
     }
 
@@ -23,8 +39,7 @@ public class DatabaseConnection {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            System.err.println("Ошибка при подключении к БД");
-            throw new RuntimeException(e);
+            throw new RuntimeException("Ошибка при подключении к БД", e);
         }
     }
 }

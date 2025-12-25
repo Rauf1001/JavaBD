@@ -47,17 +47,18 @@ public class InputUtils {
             System.out.print("Введите (true/false, да/нет, 1/0): ");
             String input = sc.nextLine().trim().toLowerCase();
 
-            switch (input) {
-                case "true", "t", "1", "да", "yes", "y" -> {
-                    return true;
-                }
-                case "false", "f", "0", "нет", "no", "n" -> {
-                    return false;
-                }
-                default -> System.out.println("Неверный ввод. Попробуйте снова.");
+            if (input.equals("true") || input.equals("t") || input.equals("1") ||
+                    input.equals("да") || input.equals("yes") || input.equals("y")) {
+                return true;
+            } else if (input.equals("false") || input.equals("f") || input.equals("0") ||
+                    input.equals("нет") || input.equals("no") || input.equals("n")) {
+                return false;
+            } else {
+                System.out.println("Неверный ввод. Попробуйте снова.");
             }
         }
     }
+
 
     public static boolean askStatusWithDefault(Scanner sc, boolean def) {
         System.out.print("Статус (по умолчанию " + (def ? "true" : "false") + ") → ");
@@ -67,6 +68,38 @@ public class InputUtils {
         if (input.isEmpty()) return def;
 
         return readBoolean(new Scanner(input));
+    }
+
+    public static int readIntRequired(Scanner sc, String text) {
+        while (true) {
+            System.out.print(text + ": ");
+            String input = sc.nextLine().trim();
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value >= 0) {
+                    return value;
+                }
+                System.out.println("Число должно быть неотрицательным.");
+            } catch (NumberFormatException e) {
+                System.out.println("Введите корректное число.");
+            }
+        }
+    }
+
+    public static int promptIntWithDefault(Scanner sc, String fieldName, int oldValue) {
+        System.out.print("Введите новый " + fieldName + " (по умолчанию " + oldValue + "): ");
+        String input = sc.nextLine().trim();
+
+        if (input.isEmpty()) return oldValue;
+
+        try {
+            int value = Integer.parseInt(input);
+            if (value >= 0) return value;
+        } catch (NumberFormatException ignored) {}
+
+        System.out.println("Некорректный ввод. Оставлено старое значение.");
+        return oldValue;
     }
 
 

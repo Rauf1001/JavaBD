@@ -15,7 +15,7 @@ public class StaffMapper {
                 rs.getString("Passport_data"),
                 rs.getString("Phone_number"),
                 rs.getString("Staff_book_number"),
-                rs.getString("Work_experience")
+                rs.getInt("Work_experience")
         );
 
 
@@ -26,7 +26,7 @@ public class StaffMapper {
         stmt.setString(2, staff.getPassport_data());
         stmt.setString(3, staff.getPhone_number());
         stmt.setString(4, staff.getStaff_book_number());
-        stmt.setString(5, staff.getWork_experience());
+        stmt.setInt(5, staff.getWork_experience());
 
     }
 }

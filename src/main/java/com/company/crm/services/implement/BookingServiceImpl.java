@@ -6,11 +6,11 @@ import com.company.crm.services.interfaces.BookingService;
 
 import java.util.List;
 
-public class BookingServiceServiceImpl implements BookingService {
+public class BookingServiceImpl implements BookingService {
 
     private final BookingDao repository;
 
-    public BookingServiceServiceImpl(BookingDao repository) {
+    public BookingServiceImpl(BookingDao repository) {
         this.repository = repository;
     }
 

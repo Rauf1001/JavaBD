@@ -2,7 +2,7 @@ package com.company.crm.controllers.implement;
 
 import com.company.crm.controllers.interfaces.GroupApplicationController;
 
-import com.company.crm.services.implement.GroupApplicationServiceServiceImpl;
+import com.company.crm.services.implement.GroupApplicationServiceImpl;
 import com.company.crm.models.GroupApplication;
 import com.company.crm.utils.DateParser;
 import com.company.crm.utils.InputUtils;
@@ -16,12 +16,13 @@ import java.util.Scanner;
 
 import static com.company.crm.utils.InputUtils.promptDateWithDefault;
 import static com.company.crm.utils.InputUtils.promptWithDefault;
+import static com.company.crm.utils.TableViewer.showTable;
 
 public class GroupApplicationControllerImpl implements GroupApplicationController {
-    private final GroupApplicationServiceServiceImpl service;
+    private final GroupApplicationServiceImpl service;
     private final Scanner scanner = new Scanner(System.in);
 
-    public GroupApplicationControllerImpl(GroupApplicationServiceServiceImpl service) {
+    public GroupApplicationControllerImpl(GroupApplicationServiceImpl service) {
         this.service = service;
     }
 
@@ -31,23 +32,45 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
     }
     @Override
     public void startMenu() {
-        boolean run = true;
-        while (run) {
+        boolean running = true;
+        while (running) {
             System.out.println("1 - Просмотр таблицы, 2 - Добавление объекта, 3 - Обновление, " + "4 - удаление, 5 - поиск по ID, 0 - выход");
 
-            int opt = Integer.parseInt(scanner.nextLine());
-            switch (opt) {
-                case 1 -> TableViewer.showTable(service.getAll());
-                case 2 -> add();
-                case 3 -> update();
-                case 4 -> delete();
-                case 5 -> find();
-                case 0 -> run = false;
-                default -> System.out.println("Неверный ввод");
+            int num = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (num) {
+                case 1:
+                    showAll();
+                    break;
+                case 2:
+                    add();
+                    break;
+                case 3:
+                    update();
+                    break;
+                case 4:
+                    delete();
+                    break;
+                case 5:
+                    find();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Неверный ввод.");
+                    break;
+
             }
         }
     }
 
+
+    private void showAll() {
+        System.out.println("Все таблицы и их данные");
+        showTable(service.getAll());
+    }
     @Override
     public void add() {
 

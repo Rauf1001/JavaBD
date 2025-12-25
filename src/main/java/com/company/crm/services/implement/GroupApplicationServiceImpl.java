@@ -6,10 +6,10 @@ import com.company.crm.services.interfaces.GroupApplicationService;
 
 import java.util.List;
 
-public class GroupApplicationServiceServiceImpl implements GroupApplicationService {
+public class GroupApplicationServiceImpl implements GroupApplicationService {
     private final GroupApplicationDao repository;
 
-    public GroupApplicationServiceServiceImpl(GroupApplicationDao repository) {
+    public GroupApplicationServiceImpl(GroupApplicationDao repository) {
         this.repository = repository;
     }
 
@@ -18,7 +18,7 @@ public class GroupApplicationServiceServiceImpl implements GroupApplicationServi
     }
 
     public void add(GroupApplication g) { repository.add(g); }
-    public List<GroupApplication> getAll() { return repository.getAll(); }
+    public  List<GroupApplication> getAll() { return repository.getAll(); }
     public GroupApplication findById(int id) { return repository.findById(id); }
 
     public GroupApplication update(GroupApplication updated) {

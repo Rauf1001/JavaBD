@@ -8,10 +8,10 @@ public class Staff implements IModel {
     private String phone_number;
 
     private String staff_book_number;
-    private String work_experience;
+    private int work_experience;
 
 
-    public Staff(String name, String passport_data, String phone_number, String staff_book_number, String work_experience) {
+    public Staff(String name, String passport_data, String phone_number, String staff_book_number, int work_experience) {
         this.name = name;
         this.passport_data = passport_data;
         this.phone_number = phone_number;
@@ -19,7 +19,7 @@ public class Staff implements IModel {
         this.work_experience = work_experience;
     }
 
-    public Staff(int id,String name, String passport_data, String phone_number, String staff_book_number, String work_experience) {
+    public Staff(int id,String name, String passport_data, String phone_number, String staff_book_number, int work_experience) {
         this.id = id;
         this.name = name;
         this.passport_data = passport_data;
@@ -51,7 +51,7 @@ public class Staff implements IModel {
     }
 
 
-    public String  getWork_experience() {
+    public int  getWork_experience() {
         return work_experience;
     }
 
@@ -76,7 +76,7 @@ public class Staff implements IModel {
         this.staff_book_number = staff_book_number;
     }
 
-    public void setWork_experience(String work_experience) {
+    public void setWork_experience(int work_experience) {
         this.work_experience = work_experience;
     }
 

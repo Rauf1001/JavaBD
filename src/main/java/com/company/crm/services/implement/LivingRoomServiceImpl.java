@@ -6,11 +6,11 @@ import com.company.crm.services.interfaces.LivingRoomService;
 
 import java.util.List;
 
-public class LivingRoomServiceServiceImpl implements LivingRoomService {
+public class LivingRoomServiceImpl implements LivingRoomService {
 
     private final LivingRoomDao repository;
 
-    public LivingRoomServiceServiceImpl(LivingRoomDao repository) {
+    public LivingRoomServiceImpl(LivingRoomDao repository) {
         this.repository = repository;
     }
 

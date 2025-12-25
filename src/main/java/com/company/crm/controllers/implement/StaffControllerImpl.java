@@ -2,7 +2,7 @@ package com.company.crm.controllers.implement;
 
 import com.company.crm.controllers.interfaces.StaffController;
 import com.company.crm.models.Staff;
-import com.company.crm.services.implement.StaffServiceServiceImpl;
+import com.company.crm.services.implement.StaffServiceImpl;
 import com.company.crm.utils.InputUtils;
 import com.company.crm.utils.InputValidator;
 import com.company.crm.utils.TableViewer;
@@ -13,14 +13,14 @@ import java.util.Scanner;
 import static com.company.crm.utils.InputUtils.promptWithDefault;
 import static com.company.crm.utils.TableViewer.showTable;
 
-public class StaffControllerControllerImpl implements StaffController {
+public class StaffControllerImpl implements StaffController {
 
 
-    private final StaffServiceServiceImpl staffServiceImpl;
+    private final StaffServiceImpl staffServiceImpl;
     private final Scanner scanner = new Scanner(System.in);
 
 
-    public StaffControllerControllerImpl(StaffServiceServiceImpl staffServiceImpl) {
+    public StaffControllerImpl(StaffServiceImpl staffServiceImpl) {
         this.staffServiceImpl = staffServiceImpl;
     }
 
@@ -42,20 +42,34 @@ public class StaffControllerControllerImpl implements StaffController {
             scanner.nextLine();
 
             switch (num) {
-                case 1 -> showAllStaff();
-                case 2 -> add();
-                case 3 -> update();
-                case 4 -> delete();
-                case 5 -> find();
-                case 0 -> running = false;
-                default -> System.out.println("Неверный ввод.");
+                case 1:
+                    showAll();
+                    break;
+                case 2:
+                    add();
+                    break;
+                case 3:
+                    update();
+                    break;
+                case 4:
+                    delete();
+                    break;
+                case 5:
+                    find();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Неверный ввод.");
+                    break;
             }
         }
 
     }
 
 
-    private void showAllStaff() {
+    private void showAll() {
         System.out.println("Все таблицы и их данные");
         showTable(staffServiceImpl.getAll());
 
@@ -102,9 +116,10 @@ public class StaffControllerControllerImpl implements StaffController {
             }
         } while (staffBook == null);
 
-        String workExperience =
-                InputUtils.readRequired(scanner, "Введите опыт работы");
-
+        int workExperience =
+                InputUtils.readIntRequired(
+                        scanner, "Введите опыт работы (в годах)"
+                );
         Staff newStaff =
                 new Staff(name, passport, phone, staffBook, workExperience);
 
@@ -184,10 +199,11 @@ public class StaffControllerControllerImpl implements StaffController {
             }
         } while (staffBook == null);
 
-        String workExperience =
-                InputUtils.promptWithDefault(
+        int workExperience =
+                InputUtils.promptIntWithDefault(
                         scanner, "опыт работы", staff.getWork_experience()
                 );
+
 
         Staff updated =
                 new Staff(id, name, passport, phone, staffBook, workExperience);

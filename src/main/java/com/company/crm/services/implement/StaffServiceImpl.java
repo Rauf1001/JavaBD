@@ -6,11 +6,11 @@ import com.company.crm.services.interfaces.StaffService;
 
 import java.util.List;
 
-public class StaffServiceServiceImpl implements StaffService {
+public class StaffServiceImpl implements StaffService {
 
     private final StaffDao repository;
 
-    public StaffServiceServiceImpl(StaffDao repository) {
+    public StaffServiceImpl(StaffDao repository) {
         this.repository = repository;
     }
 

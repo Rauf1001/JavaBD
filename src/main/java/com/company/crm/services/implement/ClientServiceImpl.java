@@ -6,10 +6,10 @@ import com.company.crm.services.interfaces.ClientService;
 
 import java.util.List;
 
-public class ClientServiceServiceImpl implements ClientService {
+public class ClientServiceImpl implements ClientService {
     private final ClientDao repository;
 
-    public ClientServiceServiceImpl(ClientDao repository) {
+    public ClientServiceImpl(ClientDao repository) {
         this.repository = repository;
     }
 

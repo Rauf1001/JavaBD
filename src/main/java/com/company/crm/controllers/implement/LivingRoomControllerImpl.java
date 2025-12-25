@@ -2,7 +2,7 @@ package com.company.crm.controllers.implement;
 
 import com.company.crm.controllers.interfaces.LivingRoomController;
 import com.company.crm.models.LivingRoom;
-import com.company.crm.services.implement.LivingRoomServiceServiceImpl;
+import com.company.crm.services.implement.LivingRoomServiceImpl;
 import com.company.crm.utils.InputUtils;
 
 import java.util.List;
@@ -11,12 +11,12 @@ import java.util.Scanner;
 import static com.company.crm.utils.InputUtils.promptWithDefault;
 import static com.company.crm.utils.TableViewer.showTable;
 
-public class LivingRoomControllerControllerImpl implements LivingRoomController {
+public class LivingRoomControllerImpl implements LivingRoomController {
 
-    private final LivingRoomServiceServiceImpl living_roomServiceImpl;
+    private final LivingRoomServiceImpl living_roomServiceImpl;
     private final Scanner scanner = new Scanner(System.in);
 
-    public LivingRoomControllerControllerImpl(LivingRoomServiceServiceImpl living_roomServiceImpl) {
+    public LivingRoomControllerImpl(LivingRoomServiceImpl living_roomServiceImpl) {
         this.living_roomServiceImpl = living_roomServiceImpl;
     }
 
@@ -36,19 +36,36 @@ public class LivingRoomControllerControllerImpl implements LivingRoomController 
             scanner.nextLine();
 
             switch (num) {
-                case 1 -> showAll();
-                case 2 -> add();
-                case 3 -> update();
-                case 4 -> delete();
-                case 5 -> find();
-                case 0 -> running = false;
-                default -> System.out.println("Неверный ввод.");
+                case 1:
+                    showAll();
+                    break;
+                case 2:
+                    add();
+                    break;
+                case 3:
+                    update();
+                    break;
+                case 4:
+                    delete();
+                    break;
+                case 5:
+                    find();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Неверный ввод.");
+                    break;
+
             }
         }
     }
 
     private void showAll() {
+        System.out.println("Все таблицы и их данные");
         showTable(living_roomServiceImpl.getAll());
+
     }
 
     @Override

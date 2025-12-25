@@ -2,7 +2,7 @@ package com.company.crm.controllers.implement;
 
 import com.company.crm.controllers.interfaces.ClientController;
 import com.company.crm.models.Client;
-import com.company.crm.services.implement.ClientServiceServiceImpl;
+import com.company.crm.services.implement.ClientServiceImpl;
 import com.company.crm.utils.DateParser;
 import com.company.crm.utils.InputUtils;
 import com.company.crm.utils.InputValidator;
@@ -18,11 +18,11 @@ import static com.company.crm.utils.InputUtils.promptDateWithDefault;
 import static com.company.crm.utils.InputUtils.promptWithDefault;
 import static com.company.crm.utils.TableViewer.showTable;
 
-public class ClientControllerControllerImpl implements ClientController {
-    private final ClientServiceServiceImpl clientServiceImpl;
+public class ClientControllerImpl implements ClientController {
+    private final ClientServiceImpl clientServiceImpl;
     private final Scanner scanner = new Scanner(System.in);
 
-    public ClientControllerControllerImpl(ClientServiceServiceImpl clientServiceImpl) {
+    public ClientControllerImpl(ClientServiceImpl clientServiceImpl) {
         this.clientServiceImpl = clientServiceImpl;
     }
 
@@ -44,20 +44,35 @@ public class ClientControllerControllerImpl implements ClientController {
             scanner.nextLine();
 
             switch (num) {
-                case 1 -> showAllClient();
-                case 2 -> add();
-                case 3 -> update();
-                case 4 -> delete();
-                case 5 -> find();
-                case 0 -> running = false;
-                default -> System.out.println("Неверный ввод.");
+                case 1:
+                    showAll();
+                    break;
+                case 2:
+                    add();
+                    break;
+                case 3:
+                    update();
+                    break;
+                case 4:
+                    delete();
+                    break;
+                case 5:
+                    find();
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Неверный ввод.");
+                    break;
+
             }
         }
 
     }
 
 
-    private void showAllClient() {
+    private void showAll() {
         System.out.println("Все таблицы и их данные");
         showTable(clientServiceImpl.getAll());
 
