@@ -37,7 +37,7 @@ public class BookingMapper {
         stmt.setDate(5, Date.valueOf(b.getArrivalDate()));
         stmt.setDate(6, Date.valueOf(b.getDepartureDate()));
         stmt.setInt(7, b.getNumberGuests());
-        stmt.setTimestamp(8, b.getBookingTime() == null ? null : Timestamp.valueOf(b.getBookingTime()));
+        stmt.setTimestamp(8, b.getBookingTime() == null ? Timestamp.valueOf(LocalDateTime.now()) : Timestamp.valueOf(b.getBookingTime()));
         stmt.setBoolean(9, b.isStatus());
         stmt.setBigDecimal(10, b.getPrice());
     }

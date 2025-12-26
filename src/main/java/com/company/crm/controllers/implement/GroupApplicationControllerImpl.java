@@ -87,8 +87,10 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
             System.out.println("ID комнаты должен быть положительным числом.");
         }
 
-        LocalDate arrival = DateParser.parserDate("Введите дату заезда (DD.MM.YYYY)");
-        LocalDate departure = DateParser.parserDate("Введите дату выезда (DD.MM.YYYY)");
+        LocalDate arrival =
+                InputUtils.readDateRequired(scanner, "Введите дату заезда (DD.MM.YYYY)");
+        LocalDate departure =
+                InputUtils.readDateRequired(scanner, "Введите дату выезда (DD.MM.YYYY)");
 
         if (!InputValidator.isValidDateRange(arrival, departure)) {
             System.out.println("Дата выезда не может быть раньше даты заезда.");
@@ -105,7 +107,6 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
             System.out.println("Некорректная цена.");
         }
 
-        System.out.print("Статус (да/нет): ");
         boolean status = InputUtils.readBoolean(scanner);
 
         String comment;
@@ -124,6 +125,7 @@ public class GroupApplicationControllerImpl implements GroupApplicationControlle
         System.out.println("Заявка успешно добавлена:");
         TableViewer.showTable(List.of(g));
     }
+
 
 
     @Override

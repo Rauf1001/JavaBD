@@ -10,7 +10,7 @@ public class GroupApplicationMapper {
 
     public static GroupApplication map(ResultSet rs) throws SQLException {
         int id = rs.getInt("ID");
-        int idLiving = rs.getInt("ID_Living_room");
+        int idLiving = rs.getInt("ID_living_room");
         LocalDate arrival = rs.getDate("Arrival_date").toLocalDate();
         LocalDate departure = rs.getDate("Departure_date").toLocalDate();
         BigDecimal price = rs.getBigDecimal("Price");
@@ -25,7 +25,7 @@ public class GroupApplicationMapper {
         stmt.setDate(2, Date.valueOf(g.getArrivalDate()));
         stmt.setDate(3, Date.valueOf(g.getDepartureDate()));
         stmt.setBigDecimal(4, g.getPrice());
-        stmt.setBoolean(5, g.isStatus());
+        stmt.setInt(5, g.isStatus() ? 1 : 0);
         stmt.setString(6, g.getComment());
     }
 }

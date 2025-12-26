@@ -68,7 +68,10 @@ public class InputValidator {
     public static String extractDigitsPassport(String passport) {
         return passport == null ? null : passport.replaceAll("\\D", "");
     }
-    public static boolean isValidDateRange(LocalDate start, LocalDate end){
+    public static boolean isValidDateRange(LocalDate start, LocalDate end) {
+        if (start == null || end == null) {
+            return false;
+        }
         return !start.isAfter(end);
     }
 

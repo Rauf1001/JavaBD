@@ -86,6 +86,18 @@ public class InputUtils {
             }
         }
     }
+    public static LocalDate readDateRequired(Scanner sc, String text) {
+        while (true) {
+            System.out.print(text + " (dd.MM.yyyy): ");
+            String input = sc.nextLine().trim();
+            try {
+                return LocalDate.parse(input, DATE_FORMATTER);
+            } catch (Exception e) {
+                System.out.println("Неверный формат даты!");
+            }
+        }
+    }
+
 
     public static int promptIntWithDefault(Scanner sc, String fieldName, int oldValue) {
         System.out.print("Введите новый " + fieldName + " (по умолчанию " + oldValue + "): ");

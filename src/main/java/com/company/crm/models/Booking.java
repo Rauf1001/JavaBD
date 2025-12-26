@@ -35,12 +35,17 @@ public class Booking implements IModel {
     public Booking(int id, int idClient, int idLivingRoom, int idStaff, int idGroupApplication,
                    LocalDate arrivalDate, LocalDate departureDate, int numberGuests,
                    LocalDateTime bookingTime, boolean status, BigDecimal price) {
-        this(arrivalDate == null ? 0 : idClient, idLivingRoom, idStaff, idGroupApplication, arrivalDate, departureDate, numberGuests, bookingTime, status, price);
         this.id = id;
         this.idClient = idClient;
         this.idLivingRoom = idLivingRoom;
         this.idStaff = idStaff;
         this.idGroupApplication = idGroupApplication;
+        this.arrivalDate = arrivalDate;
+        this.departureDate = departureDate;
+        this.numberGuests = numberGuests;
+        this.bookingTime = bookingTime;
+        this.status = status;
+        this.price = price;
     }
 
     @Override

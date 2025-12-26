@@ -42,7 +42,7 @@ public class GroupApplicationDaoJdbcImpl implements GroupApplicationDao {
 
     @Override
     public void add(GroupApplication g) {
-        String sql = "INSERT INTO Group_application (ID_Living_rooms, Arrival_date, Departure_date, Price, Status, Comment) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO Group_application (ID_Living_room, Arrival_date, Departure_date, Price, Status, Comment) VALUES (?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -91,7 +91,7 @@ public class GroupApplicationDaoJdbcImpl implements GroupApplicationDao {
 
     @Override
     public boolean update(GroupApplication g) {
-        String sql = "UPDATE Group_application SET ID_Living_rooms=?, Arrival_date=?, Departure_date=?, Price=?, Status=?, Comment=? WHERE ID=?";
+        String sql = "UPDATE Group_application SET ID_Living_room=?, Arrival_date=?, Departure_date=?, Price=?, Status=?, Comment=? WHERE ID=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

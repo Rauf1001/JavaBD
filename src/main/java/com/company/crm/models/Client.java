@@ -53,7 +53,17 @@ public class Client implements IModel{
     public LocalDate getBirth_date() {
         return birth_date;
     }
+    public String getPhone() {
+        return phone_number;
+    }
 
+    public String getPassport() {
+        return passport_data;
+    }
+
+    public LocalDate getBirthDate() {
+        return birth_date;
+    }
 
     public void setId(int id){
         this.id = id;
