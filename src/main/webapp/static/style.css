@@ -1,57 +1,143 @@
-/* Общие стили */
 body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(to right, #74ebd5, #ACB6E5);
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+}
+
+.page {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 10px;
 }
 
 .container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 30px;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 h2, h3 {
+    text-align: center;
     color: #333;
+    margin-top: 0;
+}
+
+.section {
+    margin-bottom: 30px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.form-row input, .form-row select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.form-row input:focus {
+    border-color: #2196F3;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.9; }
+.btn.primary { background: #4CAF50; color: white; }
+.btn.secondary { background: #2196F3; color: white; }
+
+/* === НАСТРОЙКИ ТАБЛИЦЫ === */
+.table-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    overflow-x: auto;
+}
+
+.staff-table {
+    margin: 0 auto;
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 1100px;
+    min-width: 600px;
+}
+
+.staff-table th, .staff-table td {
+    border: 1px solid #eee;
+    padding: 12px 15px;
+    text-align: center;
+    color: #444;
+    vertical-align: middle;
+}
+
+.staff-table th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+.staff-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Кнопки действий */
+.icon-btn {
+    font-size: 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin: 0 5px;
+    text-decoration: none;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+.icon-btn:hover { transform: scale(1.2); }
+.icon-btn.edit { color: #2196F3; }
+.icon-btn.save { color: #4CAF50; }
+.icon-btn.delete { color: #F44336; }
+.icon-btn.cancel { color: #999; }
+
+/* Пагинация */
+.pagination {
+    margin-top: 20px;
     text-align: center;
 }
 
-h3 {
-    margin-top: 20px;
-    font-size: 18px;
+.pagination a {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #2196F3;
+    font-weight: bold;
+    border-radius: 4px;
 }
 
-/* Стили для формы */
-form {
-    display: flex;
-    flex-direction: column;
+.pagination a:hover {
+    background-color: #e3f2fd;
 }
 
-form input, form select, form button {
-    margin: 8px 0;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-form select {
-    background-color: #f9f9f9;
-}
-
-form button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease;
-}
-
-form button:hover {
-    background-color: #45a049;
+.pagination span {
+    margin: 0 10px;
+    color: #555;
 }

@@ -48,6 +48,10 @@ public class Booking implements IModel {
         this.price = price;
     }
 
+    public Booking() {
+
+    }
+
     @Override
     public int getId() {
         return id;

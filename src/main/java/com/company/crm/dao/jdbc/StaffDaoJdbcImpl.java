@@ -47,134 +47,81 @@ public class StaffDaoJdbcImpl implements StaffDao {
 
     }
 
-
     @Override
     public void add(Staff staff) {
-        String sql = "INSERT INTO Staff (Name,Passport_data,Phone_number,Staff_book_number,Work_experience) VALUES (?,?,?,?,?) ";
-
+        // ID не указываем, он авто-генерируемый
+        String sql = "INSERT INTO Staff (Name, Passport_data, Phone_number, Staff_book_number, Work_experience) VALUES (?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-
             StaffMapper.mapToStatement(stmt, staff);
-
             int rows = stmt.executeUpdate();
-
 
             if (rows > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        int generateId = rs.getInt(1);
-                        staff.setId(generateId);
+                        staff.setId(rs.getInt(1));
                     }
                 }
-                System.out.println("Персонал добавлен: " + staff);
             }
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
 
+    @Override
+    public boolean update(Staff staff) {
+        // ВАЖНО: ID обновлять нельзя, он только в WHERE
+        String sql = "UPDATE Staff SET Name = ?, Passport_data = ?, Phone_number = ?, Staff_book_number = ?, Work_experience = ? WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            StaffMapper.mapToStatement(stmt, staff); // Заполняет параметры с 1 по 5
+            stmt.setInt(6, staff.getId());           // 6-й параметр - это ID для поиска строки
+
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Ошибка при добавлении персонала: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
-
-
     }
 
     @Override
     public List<Staff> getAll() {
         List<Staff> staffs = new ArrayList<>();
-        String sql = "SELECT ID,Name,Passport_data,Phone_number,Staff_book_number,Work_experience From Staff";
-
-
+        // ИСПРАВЛЕНИЕ: Добавлен ORDER BY ID, чтобы строки не прыгали после редактирования
+        String sql = "SELECT * FROM Staff ORDER BY ID ASC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
-
             while (rs.next()) {
                 staffs.add(StaffMapper.map(rs));
             }
-
-        } catch (SQLException e) {
-            System.err.println("Ошибка при получении списка клиентов: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-
+        } catch (SQLException e) { e.printStackTrace(); }
         return staffs;
     }
 
     @Override
     public Staff findById(int id) {
         String sql = "SELECT * FROM Staff WHERE ID = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-
             stmt.setInt(1, id);
-
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return StaffMapper.map(rs);
-                }
-
+                if (rs.next()) return StaffMapper.map(rs);
             }
-
-        } catch (SQLException e) {
-            System.err.println("Ошибка при поиске клиента: " + e.getMessage());
-            e.printStackTrace();
-
-        }
-
-
+        } catch (SQLException e) { e.printStackTrace(); }
         return null;
-    }
-
-    @Override
-    public boolean update(Staff staff) {
-        String sql = "UPDATE Staff SET Name = ?,Passport_data=?, Phone_number = ?,Staff_book_number=?,Work_experience=? WHERE ID = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-
-            StaffMapper.mapToStatement(stmt, staff);
-            stmt.setInt(6, staff.getId());
-
-            int rowAffected = stmt.executeUpdate();
-            return rowAffected > 0;
-
-
-        } catch (SQLException e) {
-            System.err.println("Ошибка при обновлении персонала: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-
-        return false;
     }
 
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM Staff WHERE ID = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, id);
-            int rows = stmt.executeUpdate();
-
-
-            return rows > 0;
-
-
-        } catch (SQLException e) {
-            System.err.println("Ошибка при удалении персонала: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); }
         return false;
     }
-
-
 }
+
+

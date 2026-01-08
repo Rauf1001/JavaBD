@@ -27,6 +27,5 @@ public class StaffMapper {
         stmt.setString(3, staff.getPhone_number());
         stmt.setString(4, staff.getStaff_book_number());
         stmt.setInt(5, staff.getWork_experience());
-
     }
 }

@@ -152,24 +152,24 @@ public class LivingRoomDaoJdbcImpl implements LivingRoomDao {
 
     @Override
     public boolean update(LivingRoom living_room) {
-        String sql = "UPDATE Living_room SET Room_number = ?,Location=?, Status = ? WHERE ID = ?";
+        // SQL содержит 4 знака вопроса
+        String sql = "UPDATE Living_room SET Room_number = ?, Location = ?, Status = ? WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-
-            LivingRoomMapper.mapToStatement(stmt, living_room);
-            stmt.setInt(6, living_room.getId());
+            // Устанавливаем параметры строго по порядку
+            stmt.setString(1, living_room.getRoom_number());
+            stmt.setString(2, living_room.getLocation());
+            stmt.setInt(3, living_room.getStatus());
+            stmt.setInt(4, living_room.getId()); // Это 4-й параметр!
 
             int rowAffected = stmt.executeUpdate();
             return rowAffected > 0;
-
 
         } catch (SQLException e) {
             System.err.println("Ошибка при обновлении жилой комнаты: " + e.getMessage());
             e.printStackTrace();
         }
-
-
         return false;
     }
 
